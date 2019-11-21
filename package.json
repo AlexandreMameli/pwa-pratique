@@ -20,6 +20,7 @@
   "homepage": "https://github.com/AlexandreMameli/pwa-pratique#readme",
   "dependencies": {
     "json-server": "^0.15.1",
-    "live-server": "^1.2.1"
+    "live-server": "^1.2.1",
+    "web-push": "^3.4.1"
   }
 }
