@@ -29,7 +29,7 @@ self.addEventListener('activate', (evt) => {
     console.log(`sw activé à ${new Date().toLocaleTimeString()}`); 
   
     // 5.4 Supprimer les anciennes instances de cache
-    let cacheCleanPromise = caches.keys().then()(keys => {
+    let cacheCleanPromise = caches.keys().then(keys => {
         keys.forEach(key => {            
             if(key !== cacheName){
                 caches.delete(key);
