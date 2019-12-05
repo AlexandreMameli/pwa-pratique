@@ -9,10 +9,11 @@ addTechnoForm.addEventListener('submit', evt => {
     const payload = {
         name: technonameField.value,
         description: technoDescriptionField.value,
-        url: technoUrlField.value
+        url: technoUrlField.value,
+        id: "id" + technonameField.value
     }
 
-    fetch('http://localhost:3001/technos', { 
+    fetch('https://us-central1-pwa-technos-8932d.cloudfunctions.net/addTechno', { 
             method: 'POST', 
             headers: {
                 'Content-Type': 'application/json'
@@ -21,6 +22,41 @@ addTechnoForm.addEventListener('submit', evt => {
         })
         .then(resp => {
             console.log(resp);
+        })  
+        .catch(() => {
+            // test si service worker ET "syncManager" existent
+            
+            if ('serviceWorker' in navigator && 'SyncManager' in window) {
+                
+                console.log('SyncManager supported by browser');
+                console.log('we are probably offline');
+                
+                navigator.serviceWorker.ready.then(registration => {
+                    // API entre en action lors de la déconnexion puis reconnexion
+                    // put techno pour sauvegarder en local dans IndexedDB
+                    return putTechno(payload, payload.id).then(() => {
+                    // Tague le service de synchronisation pour l'utiliser après
+                    return registration.sync.register('sync-technos')
+                    });
+            })
+            } else {
+                // TODO browser does NOT support SyncManager: send data to server via ajax
+                console.log('SyncManager NOT supported by your browser');
+            }  
         })
-        .catch(err =>console.error);
+        .then(() => {
+            clearForm();  
+        })
+        .catch(error => console.error(error));
+            
+        // 9.5 Ajouter les données en local lors de la déconnexion
+            
+        // Vide le formulaire
+            
+        const clearForm = () => {
+            technonameField.value = '';
+            technoDescriptionField.value = '';
+            technoUrlField.value = '';
+            technonameField.focus();
+  }; 
 })
